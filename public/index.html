@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Real-Time Chat</title>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body style="font-family: sans-serif; padding: 20px;">
+  <h2>Lab 4 - Real-Time Socket.IO Chat</h2>
+  <div>
+    <label>Room: <input id="room" value="general" /></label>
+    <label>User: <input id="user" value="Aditi" /></label>
+    <button onclick="join()">Join Room</button>
+  </div>
+  <br />
+  <div>
+    <input id="msg" placeholder="Type a message..." style="width: 300px;" />
+    <button onclick="send()">Send</button>
+  </div>
+  <ul id="chat" style="margin-top: 20px;"></ul>
+
+  <script>
+    const socket = io();
+
+    function join() {
+      const room = document.getElementById('room').value;
+      socket.emit('joinRoom', room);
+    }
+
+    function send() {
+      const room = document.getElementById('room').value;
+      const user = document.getElementById('user').value;
+      const text = document.getElementById('msg').value;
+      socket.emit('chatMessage', { room, user, text });
+      document.getElementById('msg').value = '';
+    }
+
+    socket.on('message', (data) => {
+      const li = document.createElement('li');
+      li.textContent = `[${data.user}]: ${data.text}`;
+      document.getElementById('chat').appendChild(li);
+    });
+  </script>
+</body>
+</html>
